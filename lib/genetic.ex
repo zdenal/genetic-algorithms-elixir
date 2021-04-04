@@ -80,6 +80,7 @@ defmodule Genetic do
         [child1, child2 | acc]
       end
     )
+    |> Enum.map(&repair_chromosome/1)
   end
 
   def mutation(population, _opts \\ []) do
@@ -91,5 +92,28 @@ defmodule Genetic do
         chromosome
       end
     end)
+  end
+
+  defp repair_chromosome(chromosome) do
+    # One approach that works around limitations in crossover strategies is the
+    # concept of chromosome repairment. Chromosome repairment is the process
+    # of ensuring solutions remain valid after crossover or mutation. In the case of
+    # N-queens, using single-point crossover ruins the integrity of the permutation.
+    # This means after crossover takes place, you have to go in and individually
+    # repair every chromosome.
+    #
+    # genes = MapSet.new(chromosome.genes)
+    # new_genes = repair_helper(chromosome, 8)
+    # %Chromosome{chromosome | genes: new_genes}
+    chromosome
+  end
+
+  defp repair_helper(chromosome, k) do
+    if MapSet.size(chromosome) >= k do
+      MapSet.to_list(chromosome)
+    else
+      num = :rand.uniform(8)
+      repair_helper(MapSet.put(chromosome, num), k)
+    end
   end
 end

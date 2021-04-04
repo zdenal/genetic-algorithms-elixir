@@ -37,4 +37,42 @@ defmodule Toolbox.Crossover do
       }
     }
   end
+
+  def uniform(p1, p2, rate = 0.5) do
+    {ch1, ch2} =
+      p1.genes
+      |> Enum.zip(p2.genes)
+      |> Enum.map(fn {x, y} ->
+        if :rand.uniform() < rate do
+          {x, y}
+        else
+          {y, x}
+        end
+      end)
+      |> Enum.unzip()
+
+    {
+      %Chromosome{p1 | genes: ch1},
+      %Chromosome{p2 | genes: ch2}
+    }
+  end
+
+  def whole_arithmetic_recombination(p1, p2, alpha) do
+    # Whole arithmetic recombination, like uniform crossover, iterates over entire
+    # chromosomes. This means it will be slower on larger solutions. It can be
+    # useful with floating-point solutions—like in portfolio optimization and determining
+    # what percentage of your portfolio to allocate to each asset.
+    {ch1, ch2} =
+      p1.genes
+      |> Enum.zip(p2.genes)
+      |> Enum.map(fn {x, y} ->
+        {x * alpha + y * (1 - alpha), x * (1 - alpha) + y * alpha}
+      end)
+      |> Enum.unzip()
+
+    {
+      %Chromosome{p1 | genes: ch1},
+      %Chromosome{p2 | genes: ch2}
+    }
+  end
 end
