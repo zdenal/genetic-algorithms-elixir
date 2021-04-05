@@ -70,7 +70,7 @@ defmodule Genetic do
   end
 
   def crossover(population, opts \\ []) do
-    crossover_fn = Keyword.get(opts, :crossover_type, &Toolbox.Crossover.order_one/2)
+    crossover_fn = Keyword.get(opts, :crossover_type, &Toolbox.Crossover.single_point/2)
 
     population
     |> Enum.reduce(

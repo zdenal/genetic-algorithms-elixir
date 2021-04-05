@@ -13,6 +13,12 @@ defmodule Toolbox.Crossover do
   end
 
   def order_one(p1, p2) do
+    # Order-one crossover, sometimes called “Davis order” crossover, is a crossover
+    # strategy on ordered lists or permutations. Order-one crossover is part of a
+    # unique set of crossover strategies that will preserve the integrity of a permutation
+    # solution.
+    # This wont work well for NON permuatation list as size of genes will no keep
+    # same size.
     size = p1.size - 1
 
     {from, to} =
@@ -27,18 +33,14 @@ defmodule Toolbox.Crossover do
     {head2, tail2} = (p1.genes -- slice2) |> Enum.split(from)
 
     {
-      %Chromosome{
-        genes: head1 ++ slice1 ++ tail1,
-        size: p1.size
-      },
-      %Chromosome{
-        genes: head2 ++ slice2 ++ tail2,
-        size: p1.size
-      }
+      %Chromosome{p1 | genes: head1 ++ slice1 ++ tail1, size: p1.size},
+      %Chromosome{p2 | genes: head2 ++ slice2 ++ tail2, size: p1.size}
     }
   end
 
-  def uniform(p1, p2, rate = 0.5) do
+  def uniform(p1, p2) do
+    rate = 0.5
+
     {ch1, ch2} =
       p1.genes
       |> Enum.zip(p2.genes)
