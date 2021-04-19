@@ -10,6 +10,7 @@ defmodule Genetic do
 
   def evolve(population, problem, last_best_fitness, temperature, opts \\ []) do
     [best | _] = population = evaluate(population, &problem.fitness_function/1)
+    statistics(population, opts)
 
     IO.puts("Current best: #{best.fitness}, Current age: #{best.age}")
 
@@ -46,6 +47,29 @@ defmodule Genetic do
       %Chromosome{chromosome | fitness: fitness_function.(chromosome), age: chromosome.age + 1}
     end)
     |> Enum.sort_by(& &1.fitness, &>=/2)
+  end
+
+  def statistics(population, opts \\ []) do
+    default_stats = [
+      min_fitness: &Enum.min_by(&1, fn c -> c.fitness end).fitness,
+      max_fitness: &Enum.max_by(&1, fn c -> c.fitness end).fitness,
+      mean_fitness: &(Enum.sum(Enum.map(&1, fn c -> c.fitness end)) / length(&1))
+    ]
+
+    stats = Keyword.get(opts, :statistics, default_stats)
+
+    stats_map =
+      stats
+      |> Enum.reduce(
+        %{},
+        fn {key, func}, acc ->
+          Map.put(acc, key, func.(population))
+        end
+      )
+
+    [%{age: generation} | _] = population
+
+    Utilities.Statistics.insert(generation, stats_map)
   end
 
   def select(population, opts \\ []) do
