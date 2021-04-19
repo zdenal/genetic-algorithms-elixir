@@ -59,3 +59,10 @@ to
 ```
 cipher = fn word, key -> Enum.map(word, &rem(&1 ^^^ key, 32768)) end
 ```
+
+**page 132*
+In `def elitist(parents, offspring, leftovers, survival_rate)` are parents list of tuples for `crossover` process.
+In reinsertion we are handle them as list in `parents ++ lefovers` and working w/ them as normal list.
+
+*page 134*
+In code example is not `uniform` reinsertion executed as is described in text above.
