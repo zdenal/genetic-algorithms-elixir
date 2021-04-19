@@ -103,3 +103,13 @@ soln.genes
 |> Enum.map(fn {presented, hours} -> presented * hours end)
 |> Enum.sum()
 |> IO.inspect()
+
+{_, zero_gen_stats} = Utilities.Statistics.lookup(1)
+{_, fivehundred_gen_stats} = Utilities.Statistics.lookup(500)
+{_, onethousand_gen_stats} = Utilities.Statistics.lookup(1000)
+
+IO.write("""
+0th: #{zero_gen_stats.mean_fitness}
+500th: #{fivehundred_gen_stats.mean_fitness}
+1000th: #{onethousand_gen_stats.mean_fitness}
+""")

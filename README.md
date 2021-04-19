@@ -66,3 +66,20 @@ In reinsertion we are handle them as list in `parents ++ lefovers` and working w
 
 *page 134*
 In code example is not `uniform` reinsertion executed as is described in text above.
+
+page 148
+The `Enum.sum(&1)` is getting tuple and raising error. Shouldn't it be first converted into list?
+FROM:
+```
+avg_genes =
+  genes
+  |> Enum.zip()
+  |> Enum.map(& Enum.sum(&1) / num_tigers)
+```
+TO:
+```
+  avg_genes =
+    genes
+    |> Enum.zip()
+    |> Enum.map(&((Tuple.to_list(&1) |> Enum.sum()) / num_tigers))
+```
