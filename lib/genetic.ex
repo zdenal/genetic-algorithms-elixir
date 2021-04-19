@@ -11,7 +11,7 @@ defmodule Genetic do
   def evolve(population, problem, last_best_fitness, temperature, opts \\ []) do
     [best | _] = population = evaluate(population, &problem.fitness_function/1)
 
-    IO.puts("Current best: #{best.fitness}")
+    IO.puts("Current best: #{best.fitness}, Current age: #{best.age}")
 
     temperature = 0.8 * (temperature + (best.fitness - last_best_fitness))
 
@@ -20,10 +20,12 @@ defmodule Genetic do
     else
       {parents, leftover} = select(population, opts)
       children = crossover(parents, opts)
+      mutants = mutation(population, opts)
+      offspring = children ++ mutants
 
-      (children ++ leftover)
-      |> mutation(opts)
-      |> evolve(problem, best.fitness, temperature, opts)
+      new_population = reinsertion(parents, offspring, leftover, opts)
+
+      evolve(new_population, problem, best.fitness, temperature, opts)
 
       # population
       # |> select(opts)
@@ -69,10 +71,10 @@ defmodule Genetic do
     {parents, leftover}
   end
 
-  def crossover(population, opts \\ []) do
+  def crossover(selected_parents, opts \\ []) do
     crossover_fn = Keyword.get(opts, :crossover_type, &Toolbox.Crossover.single_point/2)
 
-    population
+    selected_parents
     |> Enum.reduce(
       [],
       fn {p1, p2}, acc ->
@@ -87,14 +89,18 @@ defmodule Genetic do
     mutate_fn = Keyword.get(opts, :mutation_type, &Toolbox.Mutation.scrable/1)
     rate = Keyword.get(opts, :mutation_rate, 0.05)
 
+    n = floor(length(population) * rate)
+
     population
-    |> Enum.map(fn chromosome ->
-      if :rand.uniform() < rate do
-        apply(mutate_fn, [chromosome])
-      else
-        chromosome
-      end
-    end)
+    |> Enum.take(n)
+    |> Enum.map(&apply(mutate_fn, [&1]))
+  end
+
+  def reinsertion(parents, offspring, leftover, opts \\ []) do
+    strategy = Keyword.get(opts, :reinsertion_strategy, &Toolbox.Reinsertion.pure/3)
+    parents_as_list = parents |> Enum.flat_map(&Tuple.to_list/1)
+
+    apply(strategy, [parents_as_list, offspring, leftover])
   end
 
   defp repair_chromosome(chromosome) do

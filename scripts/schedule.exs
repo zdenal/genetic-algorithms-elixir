@@ -88,7 +88,12 @@ defmodule Schedule do
   def terminate?([%Chromosome{age: age} | _], _temperature), do: age == 1_000
 end
 
-soln = Genetic.run(Schedule, crossover_type: &Toolbox.Crossover.order_one/2)
+soln =
+  Genetic.run(Schedule,
+    crossover_type: &Toolbox.Crossover.order_one/2,
+    reinsertion_strategy: &Toolbox.Reinsertion.elitist(&1, &2, &3, 0.1)
+  )
+
 IO.write("\n")
 IO.inspect(soln)
 IO.write("Credit\n")
