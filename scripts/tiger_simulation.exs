@@ -53,6 +53,9 @@ tiger =
 IO.write("\n")
 IO.inspect(tiger)
 
+genealogy = Utilities.Genealogy.get_tree()
+IO.inspect(Graph.vertices(genealogy))
+
 {_, zero_gen_stats} = Utilities.Statistics.lookup(1)
 {_, fivehundred_gen_stats} = Utilities.Statistics.lookup(500)
 {_, onethousand_gen_stats} = Utilities.Statistics.lookup(1000)

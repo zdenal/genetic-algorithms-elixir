@@ -38,7 +38,9 @@ defmodule Genetic do
 
   def initialize(genotype, opts \\ []) do
     population_size = Keyword.get(opts, :population_size, 100)
-    for _ <- 1..population_size, do: genotype.()
+    population = for _ <- 1..population_size, do: genotype.()
+    Utilities.Genealogy.add_chromosomes(population)
+    population
   end
 
   def evaluate(population, fitness_function, _opts \\ []) do
@@ -103,6 +105,8 @@ defmodule Genetic do
       [],
       fn {p1, p2}, acc ->
         {child1, child2} = apply(crossover_fn, [p1, p2])
+        Utilities.Genealogy.add_chromosome(p1, p2, child1)
+        Utilities.Genealogy.add_chromosome(p1, p2, child2)
         [child1, child2 | acc]
       end
     )
@@ -117,7 +121,11 @@ defmodule Genetic do
 
     population
     |> Enum.take(n)
-    |> Enum.map(&apply(mutate_fn, [&1]))
+    |> Enum.map(fn parent ->
+      mutant = apply(mutate_fn, [parent])
+      Utilities.Genealogy.add_chromosome(parent, mutant)
+      mutant
+    end)
   end
 
   def reinsertion(parents, offspring, leftover, opts \\ []) do
