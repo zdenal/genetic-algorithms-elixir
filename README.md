@@ -32,7 +32,7 @@ to
 |> Kernel.-(Enum.at(chromosome.genes, j))
 ```
 
-*page 92*
+**page 92**
 
 why using `MapSet` if NQueens `genotype` is already generating uniq list of numbers? Isn't this easier?
 ```
@@ -60,14 +60,14 @@ to
 cipher = fn word, key -> Enum.map(word, &rem(&1 ^^^ key, 32768)) end
 ```
 
-**page 132*
+**page 132**
 In `def elitist(parents, offspring, leftovers, survival_rate)` are parents list of tuples for `crossover` process.
 In reinsertion we are handle them as list in `parents ++ lefovers` and working w/ them as normal list.
 
-*page 134*
+*page 134**
 In code example is not `uniform` reinsertion executed as is described in text above.
 
-page 148
+**page 148**
 The `Enum.sum(&1)` is getting tuple and raising error. Shouldn't it be first converted into list?
 FROM:
 ```
@@ -83,3 +83,7 @@ TO:
     |> Enum.zip()
     |> Enum.map(&((Tuple.to_list(&1) |> Enum.sum()) / num_tigers))
 ```
+
+**page 159**
+Termination function has `generation == 0` instead of `1` how is described in text. Also doesn't make sense have `0`.
+Population size is `2` .. in text above is mentioned set to `5`.
